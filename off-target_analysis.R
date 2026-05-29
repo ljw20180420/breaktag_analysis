@@ -16,7 +16,6 @@
   for (target_bed in readr::read_csv("Hiplex1.txt", col_names = "target_bed")[[
     "target_bed"
   ]]) {
-    browser()
     stem <- stringr::str_split_1(target_bed, stringr::fixed("."))[1]
     PoolNum <- stringr::str_split_1(
       stem,
@@ -24,7 +23,6 @@
     )[2]
     guides <- total_guides |>
       dplyr::filter(Dataset == sprintf("%s_Hiplex1", PoolNum)) |>
-      dplyr::select(seq) |>
       _[["seq"]]
     target_file <- breakinspectoR::read_targets(
       file.path(cache_dir, "breaktag_raw_data", target_bed),
@@ -56,16 +54,16 @@
           error = function(e) x
         )
       },
-      mc.cores = 3
+      mc.cores = 1
     )
 
-    fs::dir_create(file.path(cache_dir, "result", "breakinspectoR"))
+    fs::dir_create(file.path(cache_dir, "result", "off-target_analysis"))
     readr::write_rds(
       targets,
       file.path(
         cache_dir,
         "result",
-        "breakinspectoR",
+        "off-target_analysis",
         sprintf("%s.targets", stem)
       )
     )
