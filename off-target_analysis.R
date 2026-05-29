@@ -3,12 +3,12 @@
 {
   cache_dir <- "/home/ljw/sdc1/roukos/"
   genome <- "BSgenome.Hsapiens.UCSC.hg38"
-  # non_target_file <- breakinspectoR::read_targets(
-  #   file.path(cache_dir, "breaktag_raw_data", "GSM6995157_undig.bed.gz"),
-  #   genome = genome,
-  #   standard_chromosomes = TRUE,
-  #   strandless = TRUE
-  # )
+  non_target_file <- breakinspectoR::read_targets(
+    file.path(cache_dir, "breaktag_raw_data", "GSM6995157_undig.bed.gz"),
+    genome = genome,
+    standard_chromosomes = TRUE,
+    strandless = TRUE
+  )
   total_guides <- readr::read_csv(file.path(
     cache_dir,
     "sgRNA.csv"
@@ -59,7 +59,7 @@
       mc.cores = 3
     )
 
-    dir_create(file.path(cache_dir, "result", "breakinspectoR"))
+    fs::dir_create(file.path(cache_dir, "result", "breakinspectoR"))
     readr::write_rds(
       targets,
       file.path(
