@@ -18,9 +18,11 @@
     targets <- readr::read_rds(file.path(
       cache_dir,
       "result",
-      "breakinspectoR",
+      "off-target_analysis",
       sprintf("%s.targets", stem)
     ))
+    targets <- targets[!sapply(targets, is.null)]
+    all_targets <- unlist(as(targets, "GRangesList"))
     target_file <- breakinspectoR::read_targets(
       file.path(cache_dir, "breaktag_raw_data", target_bed),
       genome = genome,
@@ -28,7 +30,7 @@
       strandless = FALSE
     )
     scission_profile <- breakinspectoR::scission_profile_analysis(
-      x = targets,
+      x = all_targets,
       target = target_file,
       nontarget = non_target_file,
       region = 3,

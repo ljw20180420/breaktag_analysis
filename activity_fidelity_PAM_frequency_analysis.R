@@ -20,6 +20,9 @@
     ref <- total_guides |>
       dplyr::filter(Dataset == sprintf("%s_Hiplex1", PoolNum)) |>
       _[[1, "sgRNA"]]
+    guides <- total_guides |>
+      dplyr::filter(Dataset == sprintf("%s_Hiplex1", PoolNum)) |>
+      _[["seq"]]
     targets <- readr::read_rds(file.path(
       cache_dir,
       "result",
@@ -80,6 +83,46 @@
         sprintf("%s.pdf", stem)
       ),
       plot = breakinspectoR::plot_pam_logo(all_targets)
+    )
+
+    fs::dir_create(file.path(save_dir, "position_cutsite"))
+    ggplot2::ggsave(
+      file.path(
+        save_dir,
+        "position_cutsite",
+        sprintf("%s.pdf", stem)
+      ),
+      plot = breakinspectoR::plot_position_cutsite(
+        targets[[1]],
+        guide = guides[[1]],
+        pam = "NGG"
+      )
+    )
+    fs::dir_create(file.path(save_dir, "sequence_composition"))
+    ggplot2::ggsave(
+      file.path(
+        save_dir,
+        "sequence_composition",
+        sprintf("%s.pdf", stem)
+      ),
+      plot = breakinspectoR::plot_sequence_composition(
+        targets[[1]],
+        guide = guides[[1]],
+        pam = "NGG"
+      )
+    )
+    fs::dir_create(file.path(save_dir, "guide_fidelity"))
+    ggplot2::ggsave(
+      file.path(
+        save_dir,
+        "guide_fidelity",
+        sprintf("%s.pdf", stem)
+      ),
+      plot = breakinspectoR::plot_guide_fidelity(
+        targets[[1]],
+        guide = guides[[1]],
+        pam = "NGG"
+      )
     )
   }
 }
