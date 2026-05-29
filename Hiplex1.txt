@@ -1,0 +1,10 @@
+GSM6995147_PoolOne.bed.gz
+GSM6995148_PoolTwo.bed.gz
+GSM6995149_PoolThree.bed.gz
+GSM6995150_PoolFour.bed.gz
+GSM6995151_PoolFive.bed.gz
+GSM6995152_PoolSix.bed.gz
+GSM6995153_PoolSeven.bed.gz
+GSM6995154_PoolEight.bed.gz
+GSM6995155_PoolNine.bed.gz
+GSM6995156_PoolTen.bed.gz
