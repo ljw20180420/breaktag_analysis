@@ -1,10 +1,27 @@
 #!/usr/bin/env Rscript
 
 {
+  options(error = function() {
+    traceback(3)
+    quit(save = "no", status = 1, runLast = FALSE)
+  })
+
   cache_dir <- "/home/ljw/sdc1/roukos/"
   genome <- "BSgenome.Hsapiens.UCSC.hg38"
+  save_dir <- file.path(cache_dir, "result", "off-target_analysis")
+  load_dir <- file.path(
+    cache_dir,
+    "breaktag_raw_data"
+  )
+  fs::dir_create(save_dir)
+
+  non_target_file_str <- file.path(
+    load_dir,
+    "GSM6995157_undig.bed.gz"
+  )
+  cat(sprintf("load non target %s\n", non_target_file_str))
   non_target_file <- breakinspectoR::read_targets(
-    file.path(cache_dir, "breaktag_raw_data", "GSM6995157_undig.bed.gz"),
+    non_target_file_str,
     genome = genome,
     standard_chromosomes = TRUE,
     strandless = TRUE
@@ -24,46 +41,44 @@
     guides <- total_guides |>
       dplyr::filter(Dataset == sprintf("%s_Hiplex1", PoolNum)) |>
       _[["seq"]]
+
+    target_file_str <- file.path(load_dir, target_bed)
+    cat(sprintf("load target %s\n", target_file_str))
     target_file <- breakinspectoR::read_targets(
-      file.path(cache_dir, "breaktag_raw_data", target_bed),
+      target_file_str,
       genome = genome,
       standard_chromosomes = TRUE,
       strandless = TRUE
     )
-    targets <- parallel::mclapply(
-      guides,
-      function(guide) {
-        tryCatch(
-          {
-            x <- breakinspectoR::breakinspectoR(
-              target = target_file,
-              nontarget = non_target_file,
-              guide = guide,
-              PAM = "NNN",
-              bsgenome = genome,
-              cutsiteFromPAM = 3,
-              min_breaks = 8,
-              eFDR = TRUE,
-              verbose = FALSE
-            )
-            if (length(x) > 0) {
-              x$qval <- ifelse(is.na(x$qval), x$FDR, x$qval)
-              breakinspectoR::reduceOT(x, verbose = FALSE)
-            }
-          },
-          error = function(e) x
-        )
-      },
-      mc.cores = 1
-    )
 
-    fs::dir_create(file.path(cache_dir, "result", "off-target_analysis"))
+    cat(sprintf("process %s\n", stem))
+    targets <- list()
+    for (idx in seq_along(guides)) {
+      guide <- guides[idx]
+      cat(sprintf("process %d: %s\n", idx, guide))
+      x <- breakinspectoR::breakinspectoR(
+        target = target_file,
+        nontarget = non_target_file,
+        guide = guide,
+        PAM = "NNN",
+        bsgenome = genome,
+        cutsiteFromPAM = 3,
+        min_breaks = 8,
+        eFDR = TRUE,
+        verbose = FALSE
+      )
+      if (length(x) > 0) {
+        x$qval <- ifelse(is.na(x$qval), x$fdr, x$qval)
+        breakinspectoR::reduceOT(x, verbose = FALSE)
+      }
+      targets[[idx]] <- x
+    }
+
+    cat(sprintf("save %s\n", stem))
     readr::write_rds(
       targets,
       file.path(
-        cache_dir,
-        "result",
-        "off-target_analysis",
+        save_dir,
         sprintf("%s.targets", stem)
       )
     )

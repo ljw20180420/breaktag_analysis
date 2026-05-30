@@ -1,6 +1,11 @@
 #!/usr/bin/env Rscript
 
 {
+  options(error = function() {
+    traceback(3)
+    quit(save = "no", status = 1, runLast = FALSE)
+  })
+
   cache_dir <- "/home/ljw/sdc1/roukos/"
   genome <- "BSgenome.Hsapiens.UCSC.hg38"
   non_target_file <- breakinspectoR::read_targets(
@@ -48,6 +53,21 @@
         "result",
         "scission_profile_analysis",
         sprintf("%s.profile", stem)
+      )
+    )
+
+    scission_profile$blunt_rate <- log2(1 + scission_profile$on.target) -
+      log2(1 + scission_profile$around.target)
+    write.csv(
+      data.frame(
+        sequence = all_targets$guide,
+        blunt_rate = scission_profile$blunt_rate
+      ),
+      file = file.path(
+        cache_dir,
+        "result",
+        "scission_profile_analysis",
+        sprintf("%s.blunt_rate", stem)
       )
     )
   }
