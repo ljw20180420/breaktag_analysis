@@ -69,7 +69,7 @@
       )
       if (length(x) > 0) {
         x$qval <- ifelse(is.na(x$qval), x$fdr, x$qval)
-        x <- breakinspectoR::reduceOT(x, verbose = FALSE)
+        x <- breakinspectoR::reduceOT(x, guide, verbose = FALSE)
       }
       targets[[idx]] <- x
     }

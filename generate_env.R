@@ -13,7 +13,7 @@ rix(
     list(
       package_name = "breakinspectoR",
       repo_url = "https://github.com/roukoslab/breakinspectoR/",
-      commit = "c27574244d2eee2bd79a41a817b91636253734af"
+      commit = "17854efd0be31e28077c042d42580f85ffed9586"
     )
   ),
   ide = "none",
