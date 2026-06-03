@@ -1,8 +1,5 @@
 {
-  options(error = function() {
-    traceback(3)
-    quit(save = "no", status = 1, runLast = FALSE)
-  })
+  options(error = recover)
 
   cache_dir <- "/home/ljw/sdc1/roukos/"
   save_dir <- file.path(
